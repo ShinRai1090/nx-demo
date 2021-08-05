@@ -1,6 +1,56 @@
 {
   "version": 1,
   "projects": {
+    "nx-backend": {
+      "root": "apps/nx-backend",
+      "sourceRoot": "apps/nx-backend/src",
+      "projectType": "application",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/nx-backend",
+            "main": "apps/nx-backend/src/main.ts",
+            "tsConfig": "apps/nx-backend/tsconfig.app.json",
+            "assets": ["apps/nx-backend/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/nx-backend/src/environments/environment.ts",
+                  "with": "apps/nx-backend/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "nx-backend:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/nx-backend/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/nx-backend"],
+          "options": {
+            "jestConfig": "apps/nx-backend/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "nx-frontend": {
       "projectType": "application",
       "root": "apps/nx-frontend",
@@ -67,7 +117,11 @@
               "browserTarget": "nx-frontend:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "browserTarget": "todos:build",
+            "proxyConfig": "apps/nx-frontend/proxy.conf.json"
+          }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -116,6 +170,27 @@
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/nx-frontend-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "nx-shared": {
+      "root": "libs/nx-shared",
+      "sourceRoot": "libs/nx-shared/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/nx-shared/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/nx-shared"],
+          "options": {
+            "jestConfig": "libs/nx-shared/jest.config.js",
+            "passWithNoTests": true
           }
         }
       }
